@@ -28,7 +28,7 @@ app.listen(PORT, () => {
 });
 
 
-
+require('./Online_Shopping/routes/item.routes.js')(app);
 
 //configure db
 const db = require("./config/db.config.js");
