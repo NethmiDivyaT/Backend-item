@@ -27,6 +27,9 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
 
+
+
+
 //configure db
 const db = require("./config/db.config.js");
 const mongoose = require('mongoose');
@@ -46,7 +49,6 @@ mongoose.connect(db.url, {
         process.exit();
     });
 
-require('./Online_Shopping/routes/item.routes.js')(app);
 
 
 
