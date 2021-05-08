@@ -1,0 +1,25 @@
+{
+  "name": "online_shopping",
+  "version": "1.0.0",
+  "description": "Projrct using Node Js, React and MongoDB ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NethmiDivyaTharushika/Online_Shopping.git"
+  },
+  "author": "Nethmi Divya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NethmiDivyaTharushika/Online_Shopping/issues"
+  },
+  "homepage": "https://github.com/NethmiDivyaTharushika/Online_Shopping#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.7"
+  }
+}
