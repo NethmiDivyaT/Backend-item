@@ -1,5 +1,3 @@
-require("./Online_Shopping/routes/item.routes")(app);
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -15,23 +13,28 @@ app.use(cors(corsOptions));
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
+// parse requests of content-type
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// simple route
+// route
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to Shopping application." });
 });
 
-// set port, listen for requests
+// set port
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
 
-const db = require("./app/models");
-db.mongoose
-    .connect(db.url, {
+//configure db
+const db = require("./config/db.config.js");
+const mongoose = require('mongoose');
+
+mongoose.Promise = global.Promise;
+
+//connecting to the database
+mongoose.connect(db.url, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     })
@@ -42,6 +45,8 @@ db.mongoose
         console.log("Cannot connect to the database!", err);
         process.exit();
     });
+
+require('./routes/item.routes.js')(app);
 
 
 

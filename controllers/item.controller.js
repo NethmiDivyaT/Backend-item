@@ -1,5 +1,4 @@
-const db = require("../models");
-const Items = db.items;
+const item = require("../models/item.model.js");
 
 // Create and Save a new Items
 exports.create = (req, res) => {
@@ -9,14 +8,18 @@ exports.create = (req, res) => {
         });
     }
 
-    const items = new Items({
-        title:req.body.title,
-        description:req.body.description,
-        pubished:req.body.published ? req.body.published : false
-    })
+//create a item
+const items = new item({
+    itemId:req.body.itemId,
+    ProductName:req.body.ProductName,
+    Category:req.body.Category,
+    Price:req.body.Price,
+    Discount:req.body.Discount,
+    description:req.body.description,
+    });
 
-    items
-        .save(items)
+//save in db
+    items.save()
         .then(data => {
             res.send(data);
         })
@@ -29,119 +32,97 @@ exports.create = (req, res) => {
 
 // Retrieve all Items from the database.
 exports.findAll = (req, res) => {
-    const title = req.query.title;
-    var condition = title ? {
-            title: {
-                $regex: new RegExp(title), $option: "1"
-            }
-        } : {};
-
-        Items.find(condition)
-            .then(data => {
-                res.send(data);
-            })
-            .catch(err => {
-                res.status(500).send({
-                    message: err.message || "Error Occurred."
-                });
-            });
-};
-
-// Find a single Item with an id
-exports.findOne = (req, res) => {
-    const id = req.params.id;
-
-    Items.findById(id)
-        .then(data => {
-            if(!data)
-                res.status(404).send({
-                    message: id + "Not Found"
-                });
-            else res.send(data);
+    item.find()
+        .then(items => {
+            res.send(items);
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "error Occurred."
+                message: err.message || "Error Occurred."
             });
         });
+};
 
+//Retrieve single item
+exports.findOne = (req, res) => {
+    item.findById(req.params.itemId)
+        .then(item =>{
+            if(!item){
+                return res.status(404).send({
+                    message:  "Item not found"
+                });
+            }
+            res.send(item);
+        })
+        .catch(err => {
+            if(err.kind === 'ObjectId'){
+                return res.status(404).send({
+                    message:"Item not found"
+                });
+            }
+            return res.status(500).send({
+                message:"Error"
+            });
+        });
 };
 
 // Update a  Item by the id in the request
 exports.update = (req, res) => {
-    if(!req.body) {
+    if(!req.body.content) {
         return res.status(400).send({
             message : "Data to update cannot be empty!"
         });
     }
 
-    const id = req.params.id;
-
-    Items.findByIdAndUpdate(id, req.body, {useFindAndModify : false})
-        .then(data => {
-            if (!data) {
+    item.findByIdAndUpdate(req.params.itemId, {
+        itemId: req.body.itemId,
+        ProductName: req.body.ProductName,
+        Category: req.body.Category,
+        Price: req.body.Price,
+        Discount: req.body.Discount,
+        description: req.body.description
+    }, {new:true})
+    .then(items => {
+            if (!items) {
                 res.status(404).send({
-                    message: id + "Cannot Update."
+                    message: "Cannot Update."
                 });
-            } else res.send({
-                message: "Item update successfully."
-            });
-        })
-                .catch(err =>{
-                    res.status(500).send({
-                        message:id + "Error Occurred"
+            }
+            res.send(items);
+            }).catch(err => {
+                if(err.kind === 'ObjectId'){
+                    return res.status(404).send({
+                        message:"Item not found"
                     });
+                }
+                return res.status(500).send({
+                    message: "Error"
                 });
-        };
+    });
+};
 
 // Delete a Item with the specified id in the request
 exports.delete = (req, res) => {
-    const id = req.param.id;
-
-    Items.findByIdAndRemove(id)
-        .then(data =>{
-            if(!data){
-                res.status(404).send({
-                    message : id + "Cannot delete."
-                });
-            }else {
-                res.send({
-                    message:"Item was deleted successfully!"
+    item.findByIdAndRemove(req.params.itemId)
+        .then(items =>{
+            if(!items){
+                return res.status(404).send({
+                    message : "Cannot delete."
                 });
             }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:id + "could not delete"
+            res.send({message:"Item was deleted successfully!"});
+        }).catch(err => {
+            if(err.kind === 'ObjectId' || err.name === 'NotFound'){
+                return res.status(404).send({
+                    message:"Item not found"
+                });
+            }
+            return res.status(500).send({
+                message : "Item not found"
             });
-        });
+    });
+
 };
 
-// Delete all Items from the database.
-exports.deleteAll = (req, res) => {
-    Items.deleteMany({})
-        .then(data => {
-            res.send({
-                message : ${data.deletedCount} + "Items were deleted."
-            });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:err.message || "Error Occurred"
-            });
-        });
-};
 
-// Find all published Items
-exports.findAllPublished = (req, res) => {
-    Items.find({published : true})
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message : err.message || "Error Occurred."
-            });
-        });
-}
 
